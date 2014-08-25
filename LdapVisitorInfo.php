@@ -37,8 +37,6 @@ class LdapVisitorInfo extends Plugin
      */
     public function getVisitorDetailsFromLdap(&$result)
     {
-        $settings = $this->getSettings();
-        
         /* @var $lastVisits \Piwik\DataTable */
         $lastVisits = $result['lastVisits'];
         
@@ -51,7 +49,7 @@ class LdapVisitorInfo extends Plugin
             if (is_array($customVariables)) {
                 foreach ($customVariables as $customVariable) {
                     for ($i = 1; $i < 6; $i ++) {
-                        if (isset($customVariable['customVariableName' . $i]) && $customVariable['customVariableName' . $i] == $settings['customVariableName']) {
+                        if (isset($customVariable['customVariableName' . $i]) && $customVariable['customVariableName' . $i] == $this->getSetting('customVariableName')) {
                             $possibleUsernames[] = $customVariable['customVariableValue' . $i];
                         }
                     }
@@ -77,23 +75,25 @@ class LdapVisitorInfo extends Plugin
 
     /**
      *
-     * @return array
+     * @param string $name            
+     * @return mixed
      */
-    private function getSettings()
+    private function getSetting($name)
     {
         $settings = new Settings('LdapVisitorInfo');
         $settings = $settings->getSettings();
-        $settingValues = [];
-        foreach ($settings as $key => $setting) {
-            $value = $setting->getValue();
-            if ($value == '') {
-                $value = null;
-            }
-            
-            $settingValues[$key] = $value;
+        if (! isset($settings[$name])) {
+            return null;
         }
         
-        return $settingValues;
+        /* @var $value \Piwik\Settings\SystemSetting */
+        $setting = $settings[$name];
+        $value = $setting->getValue();
+        if ($value == '') {
+            $value = null;
+        }
+        
+        return $value;
     }
 
     private function getData($visitorUsername)
@@ -110,18 +110,19 @@ class LdapVisitorInfo extends Plugin
             ];
         }
         
-        $settings = $this->getSettings();
-        if ($settings['searchFilter'] === null) {
-            $settings['searchFilter'] = self::DEFAULT_SEARCH_FILTER;
+        $searchFilter = $this->getSetting('searchFilter');
+        if ($searchFilter === null) {
+            $searchFilter = self::DEFAULT_SEARCH_FILTER;
         }
         
-        $visitorDescriptionFields = $settings['visitorDescriptionFields'];
-        if ($settings['searchFilter'] === null) {
+        $visitorDescriptionFields = $this->getSetting('visitorDescriptionFields');
+        if ($visitorDescriptionFields === null) {
             $visitorDescriptionFields = self::DEFAULT_AVATAR_DESCRIPTION_FIELD;
         }
         
-        if ($settings['visitorAvatarField'] === null) {
-            $settings['visitorAvatarField'] = self::DEFAULT_AVATAR_FIELD;
+        $visitorAvatarField = $this->getSetting('visitorAvatarField');
+        if ($visitorAvatarField === null) {
+            $visitorAvatarField = self::DEFAULT_AVATAR_FIELD;
         }
         
         $visitorDescriptionFields = explode(',', $visitorDescriptionFields);
@@ -130,25 +131,25 @@ class LdapVisitorInfo extends Plugin
         }
         
         $fields = array_merge($visitorDescriptionFields, [
-            $settings['visitorAvatarField']
+            $visitorAvatarField
         ]);
         
         /* @var $ldap \Zend\Ldap\Ldap */
         $ldap = APILdapConnection::getInstance()->getConnection();
         $ldap->connect();
         
-        $filter = sprintf($settings['searchFilter'], $visitorUsername);
+        $filter = sprintf($searchFilter, $visitorUsername);
         
         $collection = $ldap->search($filter, null, Ldap::SEARCH_SCOPE_SUB, $fields);
         
         if ($collection->count() >= 1) {
             $result = $this->getEntryConverted($collection->getFirst());
             
-            if (isset($result->{$settings['visitorAvatarField']})) {
-                $visitorAvatar = "data:image/jpeg;base64," . base64_encode($result->{$settings['visitorAvatarField']});
+            if (isset($result->{$visitorAvatarField})) {
+                $visitorAvatar = "data:image/jpeg;base64," . base64_encode($result->{$visitorAvatarField});
             }
             
-            if (isset($settings['visitorDescriptionFields'])) {
+            if (isset($visitorDescriptionFields)) {
                 foreach ($visitorDescriptionFields as $field) {
                     if (isset($result->{$field})) {
                         $visitorDescription[] = $field . ': ' . $result->{$field};
