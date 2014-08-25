@@ -1,6 +1,6 @@
 {
   "name": "LdapVisitorInfo",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Piwik plugin to get visitor details (thumbnail, description) from LDAP",
   "keywords": ["Intranet", "Visitor", "LDAP", "ThaDafinser", "thumbnail"],
   "license": "GPL v3",
