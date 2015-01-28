@@ -4,7 +4,7 @@
   "description": "Piwik plugin to get visitor details (thumbnail, description) from LDAP",
   "keywords": ["Intranet", "Visitor", "LDAP", "ThaDafinser", "thumbnail"],
   "license": "GPL v3",
-  "homepage": "https://github.com/ThaDafinser/LdapVisitorInfo",
+  "homepage": "https://github.com/ThaDafinser/Piwiki-LdapVisitorInfo",
   "authors": [
     {"name": "Martin Keckeis", "homepage": "https://github.com/thadafinser"}
   ],
