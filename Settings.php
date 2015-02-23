@@ -12,6 +12,13 @@ class Settings extends \Piwik\Plugin\Settings
 
     protected function init()
     {
+        $setting = new SystemSetting('usePiwikUserId', 'Use the new userId');
+        $setting->readableByCurrentUser = true;
+        $setting->type = self::TYPE_BOOL;
+        $setting->defaultValue = false;
+        $setting->inlineHelp = 'Use the new Piwik UserId (ignore all custom variables)';
+        $this->addSetting($setting);
+        
         $setting = new SystemSetting('customVariableName', 'Name of the custom variable');
         $setting->readableByCurrentUser = true;
         $setting->type = self::TYPE_STRING;
@@ -38,12 +45,10 @@ class Settings extends \Piwik\Plugin\Settings
         $setting->type = self::TYPE_STRING;
         $setting->defaultValue = '(&(objectclass=user)(samAccountName=%s))';
         $setting->inlineHelp = 'Search for username: "(&(objectclass=user)(samAccountName=%s))". Search for E-Mail (&(objectclass=user)(mail=%s))';
-        $setting->transform = function ($value, Setting $setting)
-        {
+        $setting->transform = function ($value, Setting $setting) {
             return (string) $value;
         };
-        $setting->validate = function ($value, Setting $setting)
-        {};
+        $setting->validate = function ($value, Setting $setting) {};
         
         $this->addSetting($setting);
     }
