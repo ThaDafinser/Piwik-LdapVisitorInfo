@@ -26,3 +26,8 @@ Please see the official documentation: http://piwik.org/docs/custom-variables/ o
 
 Example:
 `_paq.push(["setCustomVariable", 1, "username", "<?php echo $usenamer; ?>", "visit"]);`
+
+__NEW: Use the userId from Piwik itself__
+
+Now you can use the piwik UserId: http://piwik.org/docs/user-id/
+Just change the plugin settings to use the piwik UserId instead of a custom variable!
