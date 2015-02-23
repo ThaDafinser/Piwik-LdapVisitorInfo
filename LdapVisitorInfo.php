@@ -37,6 +37,35 @@ class LdapVisitorInfo extends Plugin
      */
     public function getVisitorDetailsFromLdap(&$result)
     {
+        $username = $this->getUsername($result);
+        if ($username === false) {
+            return;
+        }
+        
+        list ($visitorAvatar, $visitorDescription) = $this->getData($username);
+        if ($visitorAvatar !== null) {
+            $result['visitorAvatar'] = $visitorAvatar;
+        }
+        if ($visitorDescription != '') {
+            $result['visitorDescription'] = $visitorDescription;
+        }
+    }
+
+    /**
+     * Return the username or false
+     *
+     * @return string|boolean
+     */
+    private function getUsername($result)
+    {
+        if ($this->getSetting('usePiwikUserId') === true) {
+            if (isset($result['userId'])) {
+                return $result['userId'];
+            }
+            
+            return false;
+        }
+        
         /* @var $lastVisits \Piwik\DataTable */
         $lastVisits = $result['lastVisits'];
         
@@ -59,18 +88,12 @@ class LdapVisitorInfo extends Plugin
         
         $possibleUsernames = array_unique($possibleUsernames);
         
-        // do only something if one unique username is found!
+        // only return if a "unique" result is found
         if (count($possibleUsernames) === 1) {
-            list ($visitorAvatar, $visitorDescription) = $this->getData(array_pop($possibleUsernames));
-            
-            if ($visitorAvatar !== null) {
-                $result['visitorAvatar'] = $visitorAvatar;
-            }
-            
-            if ($visitorDescription != '') {
-                $result['visitorDescription'] = $visitorDescription;
-            }
+            return $possibleUsernames[0];
         }
+        
+        return false;
     }
 
     /**
