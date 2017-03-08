@@ -8,6 +8,7 @@ use Piwik\Plugin;
 use Piwik\Plugins\LdapConnection\API as APILdapConnection;
 use Zend\Ldap\Ldap;
 use stdClass;
+use Piwik\Settings\Setting;
 
 class LdapVisitorInfo extends Plugin
 {
@@ -20,13 +21,13 @@ class LdapVisitorInfo extends Plugin
 
     /**
      *
-     * @see Piwik\Plugin::getListHooksRegistered
+     * @see Piwik\Plugin::registerEvents
      */
-    public function getListHooksRegistered()
+    public function registerEvents()
     {
-        return array(
+        return [
             'Live.getExtraVisitorDetails' => 'getVisitorDetailsFromLdap'
-        );
+        ];
     }
 
     /**
@@ -103,20 +104,15 @@ class LdapVisitorInfo extends Plugin
      */
     private function getSetting($name)
     {
-        $settings = new Settings('LdapVisitorInfo');
-        $settings = $settings->getSettings();
-        if (! isset($settings[$name])) {
-            return null;
+        $settings = new SystemSettings();
+        
+        $setting = $settings->getSetting($name);
+        
+        if($setting instanceof Setting){
+            return $setting->getValue();
         }
         
-        /* @var $value \Piwik\Settings\SystemSetting */
-        $setting = $settings[$name];
-        $value = $setting->getValue();
-        if ($value == '') {
-            $value = null;
-        }
-        
-        return $value;
+        return null;
     }
 
     private function getData($visitorUsername)
@@ -126,7 +122,6 @@ class LdapVisitorInfo extends Plugin
         
         // check if LdapConnection plugin is available!
         if (! class_exists('Piwik\Plugins\LdapConnection\API')) {
-            // @todo
             return [
                 $visitorAvatar,
                 $visitorDescription
