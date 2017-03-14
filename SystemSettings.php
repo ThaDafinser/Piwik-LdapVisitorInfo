@@ -54,7 +54,7 @@ class SystemSettings extends \Piwik\Settings\Plugin\SystemSettings
             $field->description = 'Custom variable name where you set the user identifier (e.g. username, mail)';
         });
         
-        $this->visitorAvatarField = $this->makeSetting('visitorAvatarField', 'thumbnailphoto', FieldConfig::TYPE_INT, function (FieldConfig $field) {
+        $this->visitorAvatarField = $this->makeSetting('visitorAvatarField', 'thumbnailphoto', FieldConfig::TYPE_STRING, function (FieldConfig $field) {
             $field->title = 'Avatar field name';
             $field->uiControl = FieldConfig::UI_CONTROL_TEXT;
             $field->description = 'In AD it\'s normally thumbnailphoto';
