@@ -1,33 +1,45 @@
-# Piwik LdapVisitorInfo Plugin
+# Matomo LdapVisitorInfo Plugin
 
 ## Description
 
-Configurable piwik plugin to view a visitor thumbnail and description live from LDAP.
+Configurable Matomo plugin to view a visitor thumbnail and description live from LDAP.
 
 ***This plugin requires https://github.com/ThaDafinser/LdapConnection to work!***
 
 ## FAQ
 
-__Why is PIWIK 2.5 required?__
-
-Because the configuration (to be explicit accountFilterFormat) is destroyed in the previous version
-See the ticket here: https://github.com/piwik/piwik/issues/5890
-
-
-__What does this plugin do?__
+### What does this plugin do?
 
 It displays live a thumbnail and a description in the visitor detail page from LDAP
 
 
-__How to tell Piwik which user is currently using your website?__
+### How to tell Matomo which user is currently using your website?
 
-You need so track a custom user (username, mail, ...) visitor variable, so this plugin know which user shall be fetched from LDAP.
-Please see the official documentation: http://piwik.org/docs/custom-variables/ or http://developer.piwik.org/api-reference/tracking-javascript#custom-variables
+You need to track user ID, so this plugin know which user shall be fetched from LDAP.
+
+__Option 1. Use Matomo user ID API (recommended)__
+
+Please see the official documentation: 
+- https://matomo.org/docs/user-id/
+- https://developer.matomo.org/guides/tracking-javascript-guide#user-id
+
+Change the plugin settings to use the Matomo UserId.
 
 Example:
-`_paq.push(["setCustomVariable", 1, "username", "<?php echo $usenamer; ?>", "visit"]);`
+```javascript
+_paq.push(['setUserId', 'USER_ID_HERE']);
+_paq.push(['trackPageView']);
+```
 
-__NEW: Use the userId from Piwik itself__
+__Option 2. Track a custom user visitor variable (obsoleted)__
 
-Now you can use the piwik UserId: http://piwik.org/docs/user-id/
-Just change the plugin settings to use the piwik UserId instead of a custom variable!
+Please see the official documentation: 
+- https://matomo.org/docs/custom-variables/
+- https://developer.matomo.org/api-reference/tracking-javascript
+
+Change the plugin settings to use custom variable.
+
+Example:
+```javascript
+_paq.push(["setCustomVariable", 1, "username", "<?php echo $username; ?>", "visit"]);`
+```
